@@ -48,8 +48,24 @@ const updateToken = (id) => {
     });
 };
 
+const checkToken = (token) => {
+    return new Promise((resolve, reject) => {
+        const query = "SELECT token FROM users WHERE token = '" + token + "' LIMIT 1;";
+        pool.query(query, (err, resp) => {
+            if (err) {
+                reject(err);
+            } else if (resp.rows.length > 0) {
+                resolve(true);
+            } else {
+                resolve(false);
+            }
+        });
+    });
+};
+
 module.exports = {
     users,
     findUser,
     updateToken,
+    checkToken,
 };
