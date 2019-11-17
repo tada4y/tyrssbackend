@@ -17,7 +17,7 @@ app.get('/users', (req, res) => {
         res.send(JSON.stringify(resp));
     }).catch((err) => {
         console.error(err);
-        res.status(500).send(err);
+        res.status(500).send(err.message);
     });
 });
 
@@ -28,7 +28,24 @@ app.post('/user', (req, res) => {
         res.send(JSON.stringify(resp));
     }).catch((err) => {
         console.error(err);
-        res.status(500).send(err);
+        res.status(500).send(err.message);
+    });
+});
+
+app.post('/token', (req, res) => {
+    const name = req.body.name;
+    const pass = req.body.pass;
+    return db.findUser(name, pass).then((resp) => {
+        if (resp.length > 0) {
+            return db.updateToken(resp[0].id);
+        } else {
+            throw new Error('user not found');
+        }
+    }).then((resp) => {
+        res.send(resp);
+    }).catch((err) => {
+        console.error(err);
+        res.status(500).send(err.message);
     });
 });
 

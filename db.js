@@ -1,4 +1,5 @@
 const { Pool } = require('pg');
+const hash = require('hash.js');
 
 const connectionString = process.env.DATABASE_URL;
 
@@ -32,7 +33,23 @@ const findUser = (name, pass) => {
     });
 };
 
+const updateToken = (id) => {
+    return new Promise((resolve, reject) => {
+        const time = Date.now();
+        const token = hash.sha256().update(time.toString()).digest('hex');
+        const query = "UPDATE users SET token = '" + token + "' WHERE id = " + id + ";";
+        pool.query(query, (err, resp) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(token);
+            }
+        });
+    });
+};
+
 module.exports = {
     users,
     findUser,
+    updateToken,
 };
