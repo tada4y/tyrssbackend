@@ -19,10 +19,10 @@ const users = () => {
     });
 };
 
-const findUser = (name, pass) => {
+const findUser = (name) => {
     return new Promise((resolve, reject) => {
         const query = "SELECT * FROM users WHERE name = '" 
-            + name + "' AND password = '" + pass + "' LIMIT 1;";
+            + name + "' LIMIT 1;";
         pool.query(query, (err, resp) => {
             if (err) {
                 reject(err);

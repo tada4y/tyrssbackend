@@ -1,12 +1,30 @@
 require('dotenv').config();
 const express = require('express');
+const cors = require('cors');
 const db = require('./db');
+const bcrypt = require('bcryptjs');
 const axios = require('axios');
 const xmljs = require('xml-js');
 
 const app = express();
 const port = process.env.PORT || 3000;
 
+const whiteList = [
+    'http://localhost:3000', 
+    'http://localhost:8080',
+    'https://happy-sinoussi-e9fac6.netlify.com'
+];
+const corsOpts = {
+    origin: (origin, callback) => {
+        if (whiteList.indexOf(origin) !== -1 || !origin) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    }
+};
+
+app.use(cors(corsOpts));
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }));
 
@@ -37,9 +55,13 @@ app.get('/', (req, res) => {
 app.post('/login', (req, res) => {
     const name = req.body.name;
     const pass = req.body.pass;
-    return db.findUser(name, pass).then((resp) => {
+    return db.findUser(name).then((resp) => {
         if (resp.length > 0) {
-            return db.updateToken(resp[0].id);
+            if (bcrypt.compareSync(pass, resp[0].password)) {
+                return db.updateToken(resp[0].id);
+            } else {
+                throw new Error('password invalid');
+            }
         } else {
             throw new Error('user not found');
         }
