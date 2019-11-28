@@ -63,9 +63,65 @@ const checkToken = (token) => {
     });
 };
 
+const feeds = () => {
+    return new Promise((resolve, reject) => {
+        const query = "SELECT * FROM feeds;";
+        pool.query(query, (err, resp) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(resp.rows);
+            }
+        });
+    });
+};
+
+const findFeed = (url) => {
+    return new Promise((resolve, reject) => {
+        const query = "SELECT * FROM feeds WHERE url = '" + url + "' LIMIT 1;";
+        pool.query(query, (err, resp) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(resp.rows);
+            }
+        });
+    });
+};
+
+const addFeed = (url, items) => {
+    return new Promise((resolve, reject) => {
+        const query = "INSERT INTO feeds (url, items) VALUES ('" + url + "', '" + items + "');";
+        pool.query(query, (err) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(true);
+            }
+        });
+    });
+};
+
+const updateFeed = (url, items) => {
+    return new Promise((resolve, reject) => {
+        const query = "UPDATE feeds SET items = '" + items + "' WHERE url = '" + url + "';";
+        pool.query(query, (err, resp) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(true);
+            }
+        });
+    });
+};
+
 module.exports = {
     users,
     findUser,
     updateToken,
     checkToken,
+    feeds,
+    findFeed,
+    addFeed,
+    updateFeed,
 };
