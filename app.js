@@ -91,6 +91,9 @@ app.get('/feed/update', (req, res) => {
                         const fltrd = items.filter(e => e.link === item.link);
                         if (fltrd.length === 0) items.unshift(item);
                     });
+                    if (items.length > 200) {
+                        items.splice(200);
+                    }
                     return db.updateFeed(elm.url, JSON.stringify(items));
                 }).then(() => {
                     resolve(true);
